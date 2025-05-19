@@ -5,7 +5,7 @@ from transformers import BertModel
 
 
 class HatefulMemesFusionModel(nn.Module):
-    def __init__(self, text_hidden_dim=768, image_output_dim=128, fusion_output_dim=256):
+    def __init__(self, text_hidden_dim=768, image_output_dim=128, fusion_output_dim=256, output_size=2):
         super(HatefulMemesFusionModel, self).__init__()
         
         # Text Encoder: BERT
@@ -28,7 +28,7 @@ class HatefulMemesFusionModel(nn.Module):
         self.fusion_fc = nn.Linear(text_hidden_dim + image_output_dim, fusion_output_dim)
 
         # Classifier
-        self.classifier = nn.Linear(fusion_output_dim, 2)  # Binary classification
+        self.classifier = nn.Linear(fusion_output_dim, output_size)  # Binary classification
 
     def forward(self, input_ids, attention_mask, image):
         # Text features from BERT
