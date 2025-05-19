@@ -11,7 +11,7 @@ from io import BytesIO
 class HatefulMemesDataset(Dataset):
     def __init__(self, split="train", max_length=128):
         print(f"📥 Loading Hateful Memes split: {split}")
-        self.dataset = load_dataset("facebook/hateful_memes", split=split)
+        self.dataset = load_dataset("facebook/hateful_memes", split=split, use_auth_token="hf_UoIULmHnYZYYGPfGaJKiuTAmhmchhjYcT")
         self.tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
         self.transform = transforms.Compose([
             transforms.Resize((224, 224)),
