@@ -55,53 +55,66 @@ def train_torch():
         model.to(device)
 
         criterion = nn.CrossEntropyLoss()
+        # use cfg.lr from your config
         optimizer = torch.optim.Adam(model.parameters(), lr=cfg.lr)
 
         model.train()
         for epoch in range(epochs):
             for batch in train_loader:
-                input_ids = batch["input_ids"].to(device)
+                input_ids      = batch["input_ids"].to(device)
                 attention_mask = batch["attention_mask"].to(device)
-                image = batch["image"].to(device)
-                labels = batch["label"].to(device)
+                image          = batch["image"].to(device)
+                labels         = batch["label"].to(device)
 
                 optimizer.zero_grad()
-                outputs = model(input_ids=input_ids, attention_mask=attention_mask, image=image)
+                outputs = model(input_ids=input_ids,
+                                attention_mask=attention_mask,
+                                image=image)
                 loss = criterion(outputs, labels)
                 loss.backward()
                 optimizer.step()
+
+        # ***return the updated model***
+        return model
+
     return train
 
 
-import torch
-
 def test_torch():
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    def test(model, test_loader, criterion):
+    def test(model, test_loader, cfg):
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         model.to(device)
         model.eval()
-        total, correct = 0, 0
-        total_loss = 0.0
+
+        criterion = nn.CrossEntropyLoss()
+        total_loss, total_correct, total_examples = 0.0, 0, 0
+
         with torch.no_grad():
             for batch in test_loader:
-                input_ids = batch["input_ids"].to(device)
+                input_ids      = batch["input_ids"].to(device)
                 attention_mask = batch["attention_mask"].to(device)
-                image = batch["image"].to(device)
-                labels = batch["label"].to(device)
+                image          = batch["image"].to(device)
+                labels         = batch["label"].to(device)
 
-                outputs = model(input_ids=input_ids, attention_mask=attention_mask, image=image)
+                outputs = model(input_ids=input_ids,
+                                attention_mask=attention_mask,
+                                image=image)
                 loss = criterion(outputs, labels)
                 total_loss += loss.item()
 
-                predicted = torch.argmax(outputs, dim=1)
-                correct += (predicted == labels).sum().item()
-                total += labels.size(0)
+                preds = outputs.argmax(dim=1)
+                total_correct += (preds == labels).sum().item()
+                total_examples += labels.size(0)
 
-        accuracy = correct / total if total > 0 else 0.0
-        avg_loss = total_loss / total if total > 0 else 0.0
+        avg_loss = total_loss / total_examples if total_examples else 0.0
+        accuracy = total_correct / total_examples if total_examples else 0.0
         metrics = {"accuracy": accuracy}
-        return avg_loss, accuracy, metrics  # 👈 FIXED!
+
+        # Flower expects: (loss, accuracy, metrics_dict)
+        return avg_loss, accuracy, metrics
+
     return test
+
 
 
 
