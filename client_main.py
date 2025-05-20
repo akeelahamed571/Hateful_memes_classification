@@ -66,3 +66,6 @@ def main(cfg: DictConfig) -> None:
 
 if __name__ == "__main__":
     main()
+
+def FL_client_start(cfg):
+    main(cfg)
