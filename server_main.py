@@ -4,6 +4,7 @@ from fedops.server.app import FLServer
 import models
 import data_preparation
 from hydra.utils import instantiate
+import torch.nn as nn
 
 
 @hydra.main(config_path="conf", config_name="config", version_base=None)
