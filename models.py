@@ -70,6 +70,7 @@ def test_torch():
     def test(model, test_loader, criterion, device):
         model.eval()
         total, correct = 0, 0
+        total_loss = 0.0
         with torch.no_grad():
             for batch in test_loader:
                 input_ids = batch["input_ids"].to(device)
@@ -78,8 +79,15 @@ def test_torch():
                 labels = batch["label"].to(device)
 
                 outputs = model(input_ids=input_ids, attention_mask=attention_mask, image=image)
+                loss = criterion(outputs, labels)
+                total_loss += loss.item()
+
                 predicted = torch.argmax(outputs, dim=1)
                 correct += (predicted == labels).sum().item()
                 total += labels.size(0)
-        return correct / total
+
+        avg_loss = total_loss / len(test_loader)
+        accuracy = correct / total
+        return avg_loss, accuracy, {}  # must return three values
     return test
+
