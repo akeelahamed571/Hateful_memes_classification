@@ -50,19 +50,26 @@ class HatefulMemesFusionModel(nn.Module):
 
 
 def train_torch():
-    def train(model, train_loader, criterion, optimizer, device):
-        model.train()
-        for batch in train_loader:
-            input_ids = batch["input_ids"].to(device)
-            attention_mask = batch["attention_mask"].to(device)
-            image = batch["image"].to(device)
-            labels = batch["label"].to(device)
+    def train(model, train_loader, epochs, cfg):
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        model.to(device)
 
-            optimizer.zero_grad()
-            outputs = model(input_ids=input_ids, attention_mask=attention_mask, image=image)
-            loss = criterion(outputs, labels)
-            loss.backward()
-            optimizer.step()
+        criterion = nn.CrossEntropyLoss()
+        optimizer = torch.optim.Adam(model.parameters(), lr=cfg.lr)
+
+        model.train()
+        for epoch in range(epochs):
+            for batch in train_loader:
+                input_ids = batch["input_ids"].to(device)
+                attention_mask = batch["attention_mask"].to(device)
+                image = batch["image"].to(device)
+                labels = batch["label"].to(device)
+
+                optimizer.zero_grad()
+                outputs = model(input_ids=input_ids, attention_mask=attention_mask, image=image)
+                loss = criterion(outputs, labels)
+                loss.backward()
+                optimizer.step()
     return train
 
 
