@@ -312,4 +312,4 @@ async def start_training():
 
 if __name__ == "__main__":
     # asyncio.run(training())
-    uvicorn.run("client_manager_main:app", host='0.0.0.0', port=8004, reload=True, loop="asyncio")
+    uvicorn.run("client_manager_main:app", host='0.0.0.0', port=8003, reload=True, loop="asyncio")
