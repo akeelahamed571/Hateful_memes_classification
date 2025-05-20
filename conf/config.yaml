@@ -15,7 +15,7 @@ dataset:
   validation_split: 0.2
 
 # Client
-task_id: 'hateful_memes_fedops_task'
+task_id: 'hatetaskthree'
 
 wandb: 
   use: false
