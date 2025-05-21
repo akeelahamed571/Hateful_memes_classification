@@ -13,6 +13,12 @@ from omegaconf import DictConfig, OmegaConf
 
 @hydra.main(config_path="conf", config_name="config", version_base=None)
 def main(cfg: DictConfig) -> None:
+     # ── GPU SETUP ──
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"🔌 Using device: {device}")
+    if device.type == "cuda":
+        torch.backends.cudnn.benchmark = True
+        
     logging.basicConfig(format="%(asctime)s - %(levelname)s - %(message)s", level=logging.INFO)
     logger = logging.getLogger(__name__)
 
@@ -32,6 +38,7 @@ def main(cfg: DictConfig) -> None:
 
     print("🧠 Step 4: Instantiating fusion model...")
     model = instantiate(cfg.model)
+    model = model.to(device)#newly added for moving to GPU
     model_type = cfg.model_type
     model_name = type(model).__name__
     logger.info(f"✅ Model '{model_name}' instantiated")
@@ -66,6 +73,6 @@ def main(cfg: DictConfig) -> None:
 
 if __name__ == "__main__":
     main()
-
+    
 def FL_client_start(cfg):
     main(cfg)
