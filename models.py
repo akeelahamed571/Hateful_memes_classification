@@ -49,6 +49,7 @@ class HatefulMemesFusionModel(nn.Module):
         return output
 
 
+
 def train_torch():
     def train(model, train_loader, epochs, cfg):
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -61,10 +62,10 @@ def train_torch():
         model.train()
         for epoch in range(epochs):
             for batch in train_loader:
-                input_ids      = batch["input_ids"].to(device)
-                attention_mask = batch["attention_mask"].to(device)
-                image          = batch["image"].to(device)
-                labels         = batch["label"].to(device)
+                input_ids      = batch["input_ids"].to(device, non_blocking=True)
+                attention_mask = batch["attention_mask"].to(device, non_blocking=True)
+                image          = batch["image"].to(device, non_blocking=True)
+                labels         = batch["label"].to(device, non_blocking=True)
 
                 optimizer.zero_grad()
                 outputs = model(input_ids=input_ids,
@@ -91,10 +92,10 @@ def test_torch():
 
         with torch.no_grad():
             for batch in test_loader:
-                input_ids      = batch["input_ids"].to(device)
-                attention_mask = batch["attention_mask"].to(device)
-                image          = batch["image"].to(device)
-                labels         = batch["label"].to(device)
+                input_ids      = batch["input_ids"].to(device, non_blocking=True)
+                attention_mask = batch["attention_mask"].to(device, non_blocking=True)
+                image          = batch["image"].to(device, non_blocking=True)
+                labels         = batch["label"].to(device, non_blocking=True)
 
                 outputs = model(input_ids=input_ids,
                                 attention_mask=attention_mask,
@@ -114,7 +115,6 @@ def test_torch():
         return avg_loss, accuracy, metrics
 
     return test
-
 
 
 
