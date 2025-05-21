@@ -62,10 +62,16 @@ def load_partition(batch_size=32):
     val_data = HatefulMemesDataset(split="validation")
     test_data = HatefulMemesDataset(split="test")
 
-    train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
-    val_loader = DataLoader(val_data, batch_size=batch_size)
-    test_loader = DataLoader(test_data, batch_size=batch_size)
-
+    #train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=True)
+    train_loader = DataLoader(
+    train_data, batch_size=batch_size, shuffle=True,
+    num_workers=4, pin_memory=True,
+    )
+    #val_loader = DataLoader(val_data, batch_size=batch_size)
+    val_loader = DataLoader(val_data, batch_size=batch_size, num_workers=2, pin_memory=True)
+    
+    #test_loader = DataLoader(test_data, batch_size=batch_size)
+    test_loader = DataLoader(test_data, batch_size=batch_size, num_workers=2, pin_memory=True)
     print("✅ Data loaders ready.")
     return train_loader, val_loader, test_loader
 
