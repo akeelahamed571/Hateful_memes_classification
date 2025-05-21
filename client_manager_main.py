@@ -12,6 +12,7 @@ import yaml
 import uuid
 import socket
 from typing import Optional
+from typing import ClassVar, Optional
 
 handlers_list = [logging.StreamHandler()]
 if "MONITORING" in os.environ:
