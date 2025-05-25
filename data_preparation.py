@@ -34,7 +34,7 @@ class HatefulMemesDataset(Dataset):
         # Process image
         image_tensor = torch.zeros((3, 224, 224))  # default image if anything goes wrong
         try:
-            image_info = item.get("image", None)
+            image_info = item.get("img", None)
             if image_info and isinstance(image_info, dict) and "url" in image_info:
                 img_url = image_info["url"]
                 img_bytes = requests.get(img_url, timeout=5).content
