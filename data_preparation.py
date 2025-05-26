@@ -25,12 +25,13 @@ class HatefulMemesDataset(Dataset):
 
     def __getitem__(self, idx):
         item = self.dataset[idx]
-
+        if idx == 0:
+            print("Dataset columns:", list(item.keys()))
         # Process text
         text = item["text"]
         text_tokens = self.tokenizer(text, padding="max_length", truncation=True, max_length=self.max_length, return_tensors="pt")
 
-        # Process image
+        
         # Process image
         image_tensor = torch.zeros((3, 224, 224))  # default image if anything goes wrong
         try:
