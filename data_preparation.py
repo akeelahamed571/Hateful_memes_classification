@@ -1,3 +1,4 @@
+import os
 import torch
 from torch.utils.data import Dataset, DataLoader
 from datasets import load_dataset
@@ -18,6 +19,11 @@ class HatefulMemesDataset(Dataset):
             transforms.ToTensor()
         ])
         self.max_length = max_length
+        # ◀️ Add this block to find where HF cached the images
+        arrow_path   = self.dataset.cache_files[0]["filename"]
+        cache_folder = os.path.dirname(arrow_path)
+        self.base_img_dir = os.path.join(cache_folder, "img")
+        # ◀️ end add
         print(f"✅ Loaded {len(self.dataset)} samples from {split} split")
 
     def __len__(self):
@@ -25,26 +31,25 @@ class HatefulMemesDataset(Dataset):
 
     def __getitem__(self, idx):
         item = self.dataset[idx]
+         
         if idx == 0:
             print("Dataset columns:", list(item.keys()))
         # Process text
         text = item["text"]
         text_tokens = self.tokenizer(text, padding="max_length", truncation=True, max_length=self.max_length, return_tensors="pt")
 
-        
         # Process image
-        image_tensor = torch.zeros((3, 224, 224))  # default image if anything goes wrong
+        
+        # 'img' is a string like "img/42953.png"
+        rel_path = item["img"]  
+        img_filename = os.path.basename(rel_path)           # "42953.png"
+        img_path     = os.path.join(self.base_img_dir, img_filename)
         try:
-            image_info = item.get("img", None)
-            if image_info and isinstance(image_info, dict) and "url" in image_info:
-                img_url = image_info["url"]
-                img_bytes = requests.get(img_url, timeout=5).content
-                image = Image.open(BytesIO(img_bytes)).convert("RGB")
-                image_tensor = self.transform(image)
-            else:
-                print(f"⚠️ Missing image or URL in item at index {idx}")
+            img = Image.open(img_path).convert("RGB")
+            image_tensor = self.transform(img)
         except Exception as e:
-            print(f"❌ Failed to load image for item {idx}: {e}")
+            print(f"❌ Could not load image at {img_path}: {e}")
+            image_tensor = torch.zeros((3, 224, 224))
 
 
         label = torch.tensor(item["label"], dtype=torch.long)
