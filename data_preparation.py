@@ -62,7 +62,7 @@ class HatefulMemesDataset(Dataset):
         }
 
 
-def load_partition(batch_size=32):
+def load_partition(batch_size=8):
     print("🧪 Preparing data loaders for Hateful Memes...")
     train_data = HatefulMemesDataset(split="train")
     val_data = HatefulMemesDataset(split="validation")
