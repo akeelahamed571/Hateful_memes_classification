@@ -27,7 +27,7 @@ wandb:
 num_epochs: 1
 batch_size: 32
 num_rounds: 2
-clients_per_round: 2
+clients_per_round: 1
 
 server:
   strategy:
