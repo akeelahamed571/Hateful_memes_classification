@@ -52,6 +52,7 @@ class HatefulMemesDataset(Dataset):
         try:
             img_path = hf_hub_download(
                 repo_id=self.repo_id,
+                repo_type="dataset",
                 filename=rel_path,
                 cache_dir=self.cache_dir
             )
